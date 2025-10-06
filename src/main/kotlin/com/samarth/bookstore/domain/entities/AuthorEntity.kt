@@ -1,4 +1,4 @@
-package com.samarth.bookstore.domain
+package com.samarth.bookstore.domain.entities
 
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -9,21 +9,21 @@ import jakarta.persistence.Table
 
 @Entity
 @Table(name = "authors")
-data class Author(
+data class AuthorEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "author_id_seq")
     @Column(name = "id")
-    var id: Long?,
+    val id: Long?,
 
     @Column(name = "name")
-    var name: String,
+    val name: String,
 
     @Column(name = "age")
-    var age: String,
+    val age: String,
 
     @Column(name = "description")
-    var description: String,
+    val description: String,
 
     @Column(name = "image")
-    var image: String
+    val image: String
 )

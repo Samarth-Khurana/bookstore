@@ -1,8 +1,8 @@
 package com.samarth.bookstore.repositories
 
-import com.samarth.bookstore.domain.Author
+import com.samarth.bookstore.domain.entities.AuthorEntity
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface AuthorRepository : JpaRepository<Author, Long?>
+interface AuthorRepository : JpaRepository<AuthorEntity, Long?>
