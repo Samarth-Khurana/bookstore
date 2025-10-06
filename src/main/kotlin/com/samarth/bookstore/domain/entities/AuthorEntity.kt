@@ -19,7 +19,7 @@ data class AuthorEntity(
     val name: String,
 
     @Column(name = "age")
-    val age: String,
+    val age: Int,
 
     @Column(name = "description")
     val description: String,
