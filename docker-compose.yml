@@ -2,12 +2,16 @@ services:
   db:
     image: postgres:latest
     ports:
-      - "5432:5432"
+      - "5433:5432"
     restart: always
     environment:
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: changemeinprod!
+      POSTGRES_DB: postgres
   adminer:
     image: adminer:latest
     restart: always
     ports:
-      - 8888:8080
+      - "8888:8080"
+    depends_on:
+      - db
