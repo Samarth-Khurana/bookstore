@@ -2,9 +2,9 @@ package com.samarth.bookstore.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ninjasquad.springmockk.MockkBean
-import com.samarth.bookstore.domain.dto.AuthorDto
 import com.samarth.bookstore.domain.entities.AuthorEntity
 import com.samarth.bookstore.services.AuthorService
+import com.samarth.bookstore.testAuthorDto
 import io.mockk.every
 import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
@@ -39,13 +39,7 @@ class AuthorControllerTest @Autowired constructor(
             contentType = MediaType.APPLICATION_JSON
             accept = MediaType.APPLICATION_JSON
             content = objectMapper.writeValueAsString(
-                AuthorDto(
-                    id = null,
-                    name = "John Doe",
-                    age = 18,
-                    description = "some-desc.jpeg",
-                    image = "image.jpeg"
-                )
+                testAuthorDto()
             )
         }.andExpect {
             status { isCreated() }
@@ -56,7 +50,7 @@ class AuthorControllerTest @Autowired constructor(
             id = null,
             name = "John Doe",
             age = 18,
-            description = "some-desc.jpeg",
+            description = "Some Desc",
             image = "image.jpeg"
         )
 
@@ -69,13 +63,7 @@ class AuthorControllerTest @Autowired constructor(
             contentType = MediaType.APPLICATION_JSON
             accept = MediaType.APPLICATION_JSON
             content = objectMapper.writeValueAsString(
-                AuthorDto(
-                    id = null,
-                    name = "John Doe",
-                    age = 30,
-                    description = "some-description",
-                    image = "author-image.jpeg"
-                )
+                testAuthorDto()
             )
         }.andExpect {
             status { isCreated() }
