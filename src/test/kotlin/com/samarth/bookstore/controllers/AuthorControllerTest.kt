@@ -19,6 +19,7 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
+import javax.print.attribute.standard.Media
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -128,6 +129,43 @@ class AuthorControllerTest @Autowired constructor(
                     "$[0].image", equalTo("image.jpeg")
                 )
             }
+        }
+    }
+
+    @Test
+    fun `test that readOneAuthor returns HTTP 404 if author not found in database`() {
+        every {
+            authorService.readOneAuthor(any())
+        } answers {
+            null
+        }
+        mockMvc.get("/v1/authors/1") {
+            contentType = MediaType.APPLICATION_JSON
+            accept = MediaType.APPLICATION_JSON
+        }.andExpect {
+            status { isNotFound() }
+        }
+    }
+
+
+    @Test
+    fun `test that readOneAuthor returns HTTP 200 if author present in database`() {
+        every {
+            authorService.readOneAuthor(any())
+        } answers {
+            testAuthorEntity(1)
+        }
+
+        mockMvc.get("/v1/authors/1") {
+            contentType = MediaType.APPLICATION_JSON
+            accept = MediaType.APPLICATION_JSON
+        }.andExpect {
+            status { isOk() }
+            content { jsonPath("$.id", equalTo(1)) }
+            content { jsonPath("$.name", equalTo("John Doe")) }
+            content { jsonPath("$.description", equalTo("Some Desc")) }
+            content { jsonPath("$.image", equalTo("image.jpeg")) }
+            content { jsonPath("$.age", equalTo(18)) }
         }
     }
 }

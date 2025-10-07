@@ -7,6 +7,7 @@ import com.samarth.bookstore.toAuthorEntity
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -31,5 +32,16 @@ class AuthorsController(
             },
             HttpStatus.OK
         )
+    }
+
+    @GetMapping(path = ["/{id}"])
+    fun readOneAuthor(@PathVariable("id") id: Long): ResponseEntity<AuthorDto> {
+        val foundAuthor = authorService.readOneAuthor(id = id)?.toAuthorDto()
+        return foundAuthor?.let {
+            ResponseEntity(
+                it,
+                HttpStatus.OK
+            )
+        } ?: ResponseEntity(HttpStatus.NOT_FOUND)
     }
 }
