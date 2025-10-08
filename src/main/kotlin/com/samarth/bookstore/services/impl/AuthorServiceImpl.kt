@@ -1,9 +1,9 @@
 package com.samarth.bookstore.services.impl
 
-import com.samarth.bookstore.domain.dto.AuthorDto
 import com.samarth.bookstore.domain.entities.AuthorEntity
 import com.samarth.bookstore.repositories.AuthorRepository
 import com.samarth.bookstore.services.AuthorService
+import jakarta.transaction.Transactional
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 
@@ -11,7 +11,8 @@ import org.springframework.stereotype.Service
 class AuthorServiceImpl(
     private val authorRepository: AuthorRepository
 ) : AuthorService {
-    override fun save(authorEntity: AuthorEntity): AuthorEntity {
+    override fun create(authorEntity: AuthorEntity): AuthorEntity {
+        require(authorEntity.id == null)
         return authorRepository.save(authorEntity)
     }
 
@@ -21,5 +22,15 @@ class AuthorServiceImpl(
 
     override fun readOneAuthor(id: Long): AuthorEntity? {
         return authorRepository.findByIdOrNull(id)
+    }
+
+    @Transactional
+    override fun fullUpdate(
+        id: Long,
+        authorEntity: AuthorEntity
+    ): AuthorEntity {
+        check(authorRepository.existsById(id))
+        val normalizedAuthor = authorEntity.copy(id = id)
+        return authorRepository.save(normalizedAuthor)
     }
 }

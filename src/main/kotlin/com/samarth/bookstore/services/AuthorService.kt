@@ -5,7 +5,8 @@ import org.springframework.stereotype.Service
 
 @Service
 interface AuthorService {
-    fun save(authorEntity: AuthorEntity): AuthorEntity
+    fun create(authorEntity: AuthorEntity): AuthorEntity
     fun readAllAuthors(): List<AuthorEntity>
     fun readOneAuthor(id: Long): AuthorEntity?
+    fun fullUpdate(id: Long, authorEntity: AuthorEntity): AuthorEntity
 }

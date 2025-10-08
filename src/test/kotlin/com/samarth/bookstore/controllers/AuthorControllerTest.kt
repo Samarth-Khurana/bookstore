@@ -2,7 +2,6 @@ package com.samarth.bookstore.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ninjasquad.springmockk.MockkBean
-import com.samarth.bookstore.domain.dto.AuthorDto
 import com.samarth.bookstore.domain.entities.AuthorEntity
 import com.samarth.bookstore.services.AuthorService
 import com.samarth.bookstore.testAuthorDto
@@ -19,7 +18,7 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
-import javax.print.attribute.standard.Media
+import org.springframework.test.web.servlet.put
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -32,7 +31,7 @@ class AuthorControllerTest @Autowired constructor(
     @BeforeEach
     fun setUp() {
         every {
-            authorService.save(any())
+            authorService.create(any())
         } answers {
             firstArg()
         }
@@ -59,7 +58,7 @@ class AuthorControllerTest @Autowired constructor(
             image = "image.jpeg"
         )
 
-        verify { authorService.save(expected) }
+        verify { authorService.create(expected) }
     }
 
     @Test
@@ -159,6 +158,56 @@ class AuthorControllerTest @Autowired constructor(
         mockMvc.get("/v1/authors/1") {
             contentType = MediaType.APPLICATION_JSON
             accept = MediaType.APPLICATION_JSON
+        }.andExpect {
+            status { isOk() }
+            content { jsonPath("$.id", equalTo(1)) }
+            content { jsonPath("$.name", equalTo("John Doe")) }
+            content { jsonPath("$.description", equalTo("Some Desc")) }
+            content { jsonPath("$.image", equalTo("image.jpeg")) }
+            content { jsonPath("$.age", equalTo(18)) }
+        }
+    }
+
+    @Test
+    fun `test that create author returns HTTP 404 when author IllegalArgumentException is thrown`() {
+        every {
+            authorService.create(any())
+        } throws (IllegalArgumentException())
+
+        mockMvc.post("/v1/authors") {
+            contentType = MediaType.APPLICATION_JSON
+            accept = MediaType.APPLICATION_JSON
+            content = objectMapper.writeValueAsString(testAuthorDto())
+        }.andExpect {
+            status { isBadRequest() }
+        }
+    }
+
+    @Test
+    fun `test that fullUpdate author throws IllegalStateException if author id is not present`() {
+        every { authorService.fullUpdate(any(), any()) } throws (IllegalStateException())
+
+        mockMvc.put("/v1/authors/1") {
+            contentType = MediaType.APPLICATION_JSON
+            accept = MediaType.APPLICATION_JSON
+        }.andExpect {
+            status { isBadRequest() }
+        }
+    }
+
+    @Test
+    fun `test fullUpdate returns HTTP 200 and updated author on successful call`() {
+        every {
+            authorService.fullUpdate(any(), any())
+        } answers {
+            secondArg()
+        }
+        mockMvc.put("/v1/authors/1") {
+            contentType = MediaType.APPLICATION_JSON
+            accept = MediaType.APPLICATION_JSON
+            content = objectMapper.writeValueAsString(
+                testAuthorEntity(1)
+            )
         }.andExpect {
             status { isOk() }
             content { jsonPath("$.id", equalTo(1)) }
