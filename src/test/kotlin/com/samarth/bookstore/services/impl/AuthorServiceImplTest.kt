@@ -1,9 +1,9 @@
 package com.samarth.bookstore.services.impl
 
+import com.samarth.bookstore.domain.AuthorUpdate
 import com.samarth.bookstore.domain.entities.AuthorEntity
 import com.samarth.bookstore.repositories.AuthorRepository
 import com.samarth.bookstore.testAuthorEntity
-import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.assertNotNull
 import org.junit.jupiter.api.assertThrows
@@ -96,5 +96,61 @@ class AuthorServiceImplTest @Autowired constructor(
         assertThrows<IllegalStateException> {
             underTest.fullUpdate(1, testAuthorEntity())
         }
+    }
+
+    @Test
+    fun `test that partialUpdate throws IllegalStateException if author doesn't exist`() {
+        assertThrows<IllegalStateException> {
+            underTest.partialUpdate(1, AuthorUpdate(null, null, null, null, null))
+        }
+    }
+
+    @Test
+    fun `test that partialUpdate doesn't update author is all values are null`() {
+        val savedAuthor = authorRepository.save(testAuthorEntity())
+
+        val result = underTest.partialUpdate(
+            savedAuthor.id!!,
+            AuthorUpdate()
+        )
+
+        assertEquals(savedAuthor, result)
+    }
+
+    @Test
+    fun `test that partialUpdate only changes the fields that need to be updated`() {
+
+        val savedAuthor = authorRepository.save(testAuthorEntity())
+
+        val result = underTest.partialUpdate(
+            savedAuthor.id!!,
+            AuthorUpdate(
+                name = "Samarth",
+                image = "samarth.jpeg"
+            )
+        )
+
+
+        val retrievedAuthor = authorRepository.findByIdOrNull(savedAuthor.id!!)
+
+        assertNotNull(retrievedAuthor)
+        assertNotNull(retrievedAuthor.id)
+
+        assertEquals(retrievedAuthor, result)
+    }
+
+    @Test
+    fun `test partial Update id`() {
+        val savedAuthor = authorRepository.save(testAuthorEntity())
+
+        val result = underTest.partialUpdate(savedAuthor.id!!, AuthorUpdate(id = 1, name = "samarth"))
+
+        val retrievedAuthor = authorRepository.findByIdOrNull(savedAuthor.id!!)
+        val retrievedAuthorWithNewId = authorRepository.findByIdOrNull(1)
+
+        assertNotNull(retrievedAuthor)
+        assertNotNull(retrievedAuthorWithNewId)
+
+        assertEquals(retrievedAuthor, result)
     }
 }

@@ -2,6 +2,7 @@ package com.samarth.bookstore.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ninjasquad.springmockk.MockkBean
+import com.samarth.bookstore.domain.dto.AuthorUpdateDto
 import com.samarth.bookstore.domain.entities.AuthorEntity
 import com.samarth.bookstore.services.AuthorService
 import com.samarth.bookstore.testAuthorDto
@@ -15,10 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
-import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.get
-import org.springframework.test.web.servlet.post
-import org.springframework.test.web.servlet.put
+import org.springframework.test.web.servlet.*
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -207,6 +205,53 @@ class AuthorControllerTest @Autowired constructor(
             accept = MediaType.APPLICATION_JSON
             content = objectMapper.writeValueAsString(
                 testAuthorEntity(1)
+            )
+        }.andExpect {
+            status { isOk() }
+            content { jsonPath("$.id", equalTo(1)) }
+            content { jsonPath("$.name", equalTo("John Doe")) }
+            content { jsonPath("$.description", equalTo("Some Desc")) }
+            content { jsonPath("$.image", equalTo("image.jpeg")) }
+            content { jsonPath("$.age", equalTo(18)) }
+        }
+    }
+
+    @Test
+    fun `test that partialUpdate returns HTTP 400 if IllegalStateException is thrown`() {
+        every { authorService.partialUpdate(any(), any()) } throws(IllegalStateException())
+
+        mockMvc.patch("/v1/authors/1") {
+            contentType = MediaType.APPLICATION_JSON
+            accept = MediaType.APPLICATION_JSON
+            content = objectMapper.writeValueAsString(
+                AuthorUpdateDto(
+                    name = "Samarth",
+                    id = null,
+                    age = null,
+                    description = null,
+                    image = null
+                )
+            )
+        }.andExpect {
+            status { isBadRequest() }
+        }
+    }
+
+    @Test
+    fun `test that partialUpdate return HTTP 200 and updated author`() {
+        every { authorService.partialUpdate(any(), any()) } answers { testAuthorEntity(1) }
+
+        mockMvc.patch("/v1/authors/1") {
+            contentType = MediaType.APPLICATION_JSON
+            accept = MediaType.APPLICATION_JSON
+            content = objectMapper.writeValueAsString(
+                AuthorUpdateDto(
+                    name = "John Doe",
+                    id = 1,
+                    age = 18,
+                    description = "Some Desc",
+                    image = "image.jpeg"
+                )
             )
         }.andExpect {
             status { isOk() }

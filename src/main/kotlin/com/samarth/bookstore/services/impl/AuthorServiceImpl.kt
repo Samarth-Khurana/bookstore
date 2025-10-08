@@ -1,5 +1,6 @@
 package com.samarth.bookstore.services.impl
 
+import com.samarth.bookstore.domain.AuthorUpdate
 import com.samarth.bookstore.domain.entities.AuthorEntity
 import com.samarth.bookstore.repositories.AuthorRepository
 import com.samarth.bookstore.services.AuthorService
@@ -32,5 +33,20 @@ class AuthorServiceImpl(
         check(authorRepository.existsById(id))
         val normalizedAuthor = authorEntity.copy(id = id)
         return authorRepository.save(normalizedAuthor)
+    }
+
+    @Transactional
+    override fun partialUpdate(id: Long, authorUpdate: AuthorUpdate): AuthorEntity {
+        val existingAuthor = authorRepository.findByIdOrNull(id)
+        checkNotNull(existingAuthor)
+
+        val updatedAuthor = existingAuthor.copy(
+            name = authorUpdate.name ?: existingAuthor.name,
+            age = authorUpdate.age ?: existingAuthor.age,
+            image = authorUpdate.image ?: existingAuthor.image,
+            description = authorUpdate.description ?: existingAuthor.description
+        )
+
+        return authorRepository.save(updatedAuthor)
     }
 }
