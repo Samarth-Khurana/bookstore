@@ -218,7 +218,7 @@ class AuthorControllerTest @Autowired constructor(
 
     @Test
     fun `test that partialUpdate returns HTTP 400 if IllegalStateException is thrown`() {
-        every { authorService.partialUpdate(any(), any()) } throws(IllegalStateException())
+        every { authorService.partialUpdate(any(), any()) } throws (IllegalStateException())
 
         mockMvc.patch("/v1/authors/1") {
             contentType = MediaType.APPLICATION_JSON
@@ -260,6 +260,18 @@ class AuthorControllerTest @Autowired constructor(
             content { jsonPath("$.description", equalTo("Some Desc")) }
             content { jsonPath("$.image", equalTo("image.jpeg")) }
             content { jsonPath("$.age", equalTo(18)) }
+        }
+    }
+
+    @Test
+    fun `test that deleteAuthor returns HTTP 204 on successful delete`() {
+        every { authorService.deleteAuthor(any()) } answers { }
+
+        mockMvc.delete("/v1/authors/1") {
+            contentType = MediaType.APPLICATION_JSON
+            accept = MediaType.APPLICATION_JSON
+        }.andExpect {
+            status { isNoContent() }
         }
     }
 }

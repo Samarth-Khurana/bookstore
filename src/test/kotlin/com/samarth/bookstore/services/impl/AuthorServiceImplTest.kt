@@ -4,6 +4,7 @@ import com.samarth.bookstore.domain.AuthorUpdate
 import com.samarth.bookstore.domain.entities.AuthorEntity
 import com.samarth.bookstore.repositories.AuthorRepository
 import com.samarth.bookstore.testAuthorEntity
+import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.assertNotNull
 import org.junit.jupiter.api.assertThrows
@@ -14,6 +15,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @SpringBootTest
+@Transactional
 class AuthorServiceImplTest @Autowired constructor(
     private val underTest: AuthorServiceImpl,
     private val authorRepository: AuthorRepository
@@ -83,7 +85,7 @@ class AuthorServiceImplTest @Autowired constructor(
             description = "description",
             image = "sam.jpeg"
         )
-        val result = underTest.fullUpdate(1, updatedAuthor)
+        val result = underTest.fullUpdate(savedAuthor.id!!, updatedAuthor)
         assertEquals(updatedAuthor, result)
 
         val retrievedAuthor = authorRepository.findByIdOrNull(savedAuthor.id!!)
@@ -146,11 +148,26 @@ class AuthorServiceImplTest @Autowired constructor(
         val result = underTest.partialUpdate(savedAuthor.id!!, AuthorUpdate(id = 1, name = "samarth"))
 
         val retrievedAuthor = authorRepository.findByIdOrNull(savedAuthor.id!!)
-        val retrievedAuthorWithNewId = authorRepository.findByIdOrNull(1)
 
         assertNotNull(retrievedAuthor)
-        assertNotNull(retrievedAuthorWithNewId)
 
         assertEquals(retrievedAuthor, result)
+    }
+
+
+    @Test
+    fun `test that deleteAuthor deletes exists existing author in db`() {
+        val existingAuthor = authorRepository.save(testAuthorEntity())
+        val id = existingAuthor.id!!
+
+        underTest.deleteAuthor(id)
+
+        assertEquals(false, authorRepository.existsById(id))
+    }
+
+    @Test
+    fun `test that deleteAuthor deletes an non-existing author in db`() {
+        underTest.deleteAuthor(2)
+        assertEquals(false, authorRepository.existsById(2))
     }
 }

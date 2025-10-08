@@ -11,4 +11,5 @@ interface AuthorService {
     fun readOneAuthor(id: Long): AuthorEntity?
     fun fullUpdate(id: Long, authorEntity: AuthorEntity): AuthorEntity
     fun partialUpdate(id: Long, authorUpdate: AuthorUpdate): AuthorEntity
+    fun deleteAuthor(id: Long)
 }

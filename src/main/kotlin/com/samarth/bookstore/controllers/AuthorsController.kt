@@ -20,7 +20,7 @@ class AuthorsController(
         try {
             val createdAuthor = authorService.create(authorDto.toAuthorEntity()).toAuthorDto()
             return ResponseEntity(createdAuthor, HttpStatus.CREATED)
-        } catch (e: IllegalArgumentException) {
+        } catch (_: IllegalArgumentException) {
             return ResponseEntity(HttpStatus.BAD_REQUEST)
         }
     }
@@ -54,7 +54,7 @@ class AuthorsController(
                 updatedAuthor,
                 HttpStatus.OK
             )
-        } catch (e: IllegalStateException) {
+        } catch (_: IllegalStateException) {
             ResponseEntity(HttpStatus.BAD_REQUEST)
         }
     }
@@ -74,11 +74,17 @@ class AuthorsController(
                 result,
                 HttpStatus.OK
             )
-        } catch (e: IllegalStateException) {
+        } catch (_: IllegalStateException) {
             ResponseEntity(
                 HttpStatus.BAD_REQUEST
             )
         }
+    }
+
+    @DeleteMapping(path = ["{id}"])
+    fun deleteAuthor(@PathVariable id: Long) : ResponseEntity<Unit> {
+        authorService.deleteAuthor(id)
+        return ResponseEntity(HttpStatus.NO_CONTENT)
     }
 }
 
