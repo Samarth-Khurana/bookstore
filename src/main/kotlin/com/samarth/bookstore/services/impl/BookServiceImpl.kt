@@ -27,4 +27,8 @@ class BookServiceImpl(
         val savedBook = bookRepository.save(normalizedBook.toBookEntity(author))
         return Pair(savedBook, !bookExists)
     }
+
+    override fun readManyBooks(): List<BookEntity> {
+        return bookRepository.findAll()
+    }
 }
