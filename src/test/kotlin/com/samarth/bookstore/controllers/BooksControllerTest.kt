@@ -2,6 +2,7 @@ package com.samarth.bookstore.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ninjasquad.springmockk.MockkBean
+import com.samarth.bookstore.domain.BookSummaryUpdate
 import com.samarth.bookstore.services.BookService
 import com.samarth.bookstore.testAuthorEntity
 import com.samarth.bookstore.testAuthorSummaryDto
@@ -15,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
+import org.springframework.test.web.servlet.patch
 import org.springframework.test.web.servlet.put
 import kotlin.test.Test
 
@@ -187,6 +189,64 @@ class BooksControllerTest @Autowired constructor(
             status { isOk() }
             content { jsonPath("$.isbn", equalTo("1234")) }
             content { jsonPath("$.title", equalTo("Test Book")) }
+            content { jsonPath("$.image", equalTo("book-image.jpeg")) }
+            content { jsonPath("$.description", equalTo("Book Desc")) }
+            content { jsonPath("$.author.id", equalTo(1)) }
+            content { jsonPath("$.author.name", equalTo("John Doe")) }
+            content { jsonPath("$.author.image", equalTo("image.jpeg")) }
+        }
+    }
+
+    @Test
+    fun `test that partialUpdate returns HTTP 400 on invalid isbn`() {
+        val bookSummaryUpdate = BookSummaryUpdate(
+            title = "Another Book",
+        )
+        every {
+            bookService.partialUpdate(
+                any(), bookSummaryUpdate
+            )
+        } throws IllegalStateException()
+
+        mockMvc.patch("/v1/books/999") {
+            contentType = MediaType.APPLICATION_JSON
+            accept = MediaType.APPLICATION_JSON
+            content = objectMapper.writeValueAsString(
+                bookSummaryUpdate
+            )
+        }.andExpect {
+            status { isBadRequest() }
+        }
+    }
+
+
+    @Test
+    fun `test that partialUpdate returns HTTP 200 on valid isbn`() {
+        val bookSummaryUpdate = BookSummaryUpdate(
+            title = "Another Book",
+        )
+        every {
+            bookService.partialUpdate(
+                any(), bookSummaryUpdate
+            )
+        } answers {
+            testBookEntity(
+                isbn = "1234",
+                authorEntity = testAuthorEntity(1),
+                title = "Another Book"
+            )
+        }
+
+        mockMvc.patch("/v1/books/1234") {
+            contentType = MediaType.APPLICATION_JSON
+            accept = MediaType.APPLICATION_JSON
+            content = objectMapper.writeValueAsString(
+                bookSummaryUpdate
+            )
+        }.andExpect {
+            status { isOk() }
+            content { jsonPath("$.isbn", equalTo("1234")) }
+            content { jsonPath("$.title", equalTo("Another Book")) }
             content { jsonPath("$.image", equalTo("book-image.jpeg")) }
             content { jsonPath("$.description", equalTo("Book Desc")) }
             content { jsonPath("$.author.id", equalTo(1)) }

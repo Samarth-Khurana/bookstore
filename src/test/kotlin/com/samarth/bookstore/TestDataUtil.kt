@@ -2,6 +2,7 @@ package com.samarth.bookstore
 
 import com.samarth.bookstore.domain.AuthorSummary
 import com.samarth.bookstore.domain.BookSummary
+import com.samarth.bookstore.domain.BookSummaryUpdate
 import com.samarth.bookstore.domain.dto.AuthorDto
 import com.samarth.bookstore.domain.dto.AuthorSummaryDto
 import com.samarth.bookstore.domain.dto.BookSummaryDto
@@ -26,9 +27,9 @@ fun testAuthorEntity(id: Long? = null) = AuthorEntity(
     image = "image.jpeg"
 )
 
-fun testBookEntity(isbn: String, authorEntity: AuthorEntity) = BookEntity(
+fun testBookEntity(isbn: String, authorEntity: AuthorEntity, title: String? = null) = BookEntity(
     isbn = isbn,
-    title = "Test Book",
+    title = title ?: "Test Book",
     description = "Book Desc",
     image = "book-image.jpeg",
     author = authorEntity

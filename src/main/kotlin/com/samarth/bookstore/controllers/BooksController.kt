@@ -1,13 +1,16 @@
 package com.samarth.bookstore.controllers
 
 import com.samarth.bookstore.domain.dto.BookSummaryDto
+import com.samarth.bookstore.domain.dto.BookSummaryUpdateDto
 import com.samarth.bookstore.exceptions.InvalidAuthorException
 import com.samarth.bookstore.services.BookService
 import com.samarth.bookstore.toBookSummary
 import com.samarth.bookstore.toBookSummaryDto
+import com.samarth.bookstore.toBookSummaryUpdate
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -62,5 +65,20 @@ class BooksController(
             book.toBookSummaryDto(),
             HttpStatus.OK
         )
+    }
+
+    @PatchMapping(path = ["/{isbn}"])
+    fun partialUpdate(
+        @PathVariable(name = "isbn") isbn: String,
+        @RequestBody bookSummaryUpdateDto: BookSummaryUpdateDto
+    ): ResponseEntity<BookSummaryDto> {
+        return try {
+            ResponseEntity(
+                bookService.partialUpdate(isbn, bookSummaryUpdateDto.toBookSummaryUpdate()).toBookSummaryDto(),
+                HttpStatus.OK
+            )
+        } catch (e: IllegalStateException) {
+            ResponseEntity(HttpStatus.BAD_REQUEST)
+        }
     }
 }

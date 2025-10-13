@@ -1,6 +1,7 @@
 package com.samarth.bookstore.services.impl
 
 import com.samarth.bookstore.domain.BookSummary
+import com.samarth.bookstore.domain.BookSummaryUpdate
 import com.samarth.bookstore.domain.entities.BookEntity
 import com.samarth.bookstore.repositories.AuthorRepository
 import com.samarth.bookstore.repositories.BookRepository
@@ -36,5 +37,21 @@ class BookServiceImpl(
 
     override fun readOneBook(isbn: String): BookEntity? {
         return bookRepository.findByIdOrNull(isbn)
+    }
+
+    override fun partialUpdate(
+        isbn: String,
+        bookSummaryUpdate: BookSummaryUpdate
+    ): BookEntity {
+        val retrievedBook = bookRepository.findByIdOrNull(isbn)
+        checkNotNull(retrievedBook)
+
+        val updatedBook = retrievedBook.copy(
+            title = bookSummaryUpdate.title ?: retrievedBook.title,
+            image = bookSummaryUpdate.image ?: retrievedBook.image,
+            description = bookSummaryUpdate.description ?: retrievedBook.description,
+        )
+
+        return bookRepository.save(updatedBook)
     }
 }

@@ -1,5 +1,6 @@
 package com.samarth.bookstore.services.impl
 
+import com.samarth.bookstore.domain.BookSummaryUpdate
 import com.samarth.bookstore.domain.entities.BookEntity
 import com.samarth.bookstore.repositories.AuthorRepository
 import com.samarth.bookstore.repositories.BookRepository
@@ -164,7 +165,7 @@ class BookServiceImplTest @Autowired constructor(
         bookRepository.save(book1)
 
 
-        val books = underTest.readManyBooks(authorId+1)
+        val books = underTest.readManyBooks(authorId + 1)
 
 
         assertEquals(emptyList(), books)
@@ -187,5 +188,31 @@ class BookServiceImplTest @Autowired constructor(
 
 
         assertEquals(savedBook, answer)
+    }
+
+    @Test
+    fun `test that partialUpdate throws IllegalStateException with invalid isbn`() {
+        assertThrows<IllegalStateException> {
+            underTest.partialUpdate("1234", BookSummaryUpdate(title = "Another Book"))
+        }
+    }
+
+    @Test
+    fun `test that partialUpdate returns the updated field with valid isbn`() {
+        val savedAuthor = authorRepository.save(testAuthorEntity())
+        val authorId = savedAuthor.id
+
+        kotlin.test.assertNotNull(savedAuthor)
+        assertNotNull(authorId)
+
+        val savedBook = bookRepository.save(testBookEntity("1234", savedAuthor))
+        assertNotNull(savedBook)
+
+        val updatedBook = underTest.partialUpdate("1234", BookSummaryUpdate(title = "Another Book"))
+        assertNotNull(updatedBook)
+
+        val retrievedBook = bookRepository.findByIdOrNull("1234")
+        assertNotNull(retrievedBook)
+        assertEquals(updatedBook, retrievedBook)
     }
 }

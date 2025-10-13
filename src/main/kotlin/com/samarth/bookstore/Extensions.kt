@@ -3,10 +3,12 @@ package com.samarth.bookstore
 import com.samarth.bookstore.domain.AuthorSummary
 import com.samarth.bookstore.domain.AuthorUpdate
 import com.samarth.bookstore.domain.BookSummary
+import com.samarth.bookstore.domain.BookSummaryUpdate
 import com.samarth.bookstore.domain.dto.AuthorDto
 import com.samarth.bookstore.domain.dto.AuthorSummaryDto
 import com.samarth.bookstore.domain.dto.AuthorUpdateDto
 import com.samarth.bookstore.domain.dto.BookSummaryDto
+import com.samarth.bookstore.domain.dto.BookSummaryUpdateDto
 import com.samarth.bookstore.domain.entities.AuthorEntity
 import com.samarth.bookstore.domain.entities.BookEntity
 import com.samarth.bookstore.exceptions.InvalidAuthorException
@@ -80,3 +82,9 @@ fun AuthorEntity.toAuthorSummaryDto(): AuthorSummaryDto {
         image = this.image
     )
 }
+
+fun BookSummaryUpdateDto.toBookSummaryUpdate() = BookSummaryUpdate(
+    title = this.title,
+    description = this.description,
+    image = this.image
+)
