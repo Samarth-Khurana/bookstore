@@ -15,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.delete
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.patch
 import org.springframework.test.web.servlet.put
@@ -252,6 +253,18 @@ class BooksControllerTest @Autowired constructor(
             content { jsonPath("$.author.id", equalTo(1)) }
             content { jsonPath("$.author.name", equalTo("John Doe")) }
             content { jsonPath("$.author.image", equalTo("image.jpeg")) }
+        }
+    }
+
+    @Test
+    fun `test that deleteBook deletes the Book`() {
+        every { bookService.delete(any()) } answers {}
+
+        mockMvc.delete("/v1/books/1234") {
+            contentType = MediaType.APPLICATION_JSON
+            accept = MediaType.APPLICATION_JSON
+        }.andExpect {
+            status { isNoContent() }
         }
     }
 }

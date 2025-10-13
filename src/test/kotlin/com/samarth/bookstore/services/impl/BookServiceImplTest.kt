@@ -215,4 +215,23 @@ class BookServiceImplTest @Autowired constructor(
         assertNotNull(retrievedBook)
         assertEquals(updatedBook, retrievedBook)
     }
+
+    @Test
+    fun `test that delete successfully deletes from db`() {
+
+        val savedAuthor = authorRepository.save(testAuthorEntity())
+        val authorId = savedAuthor.id
+
+        kotlin.test.assertNotNull(savedAuthor)
+        assertNotNull(authorId)
+
+        val savedBook = bookRepository.save(testBookEntity("1234", savedAuthor))
+        assertNotNull(savedBook)
+
+        underTest.delete("1234")
+
+        val retrievedBook = bookRepository.findByIdOrNull("1234")
+        assertNull(retrievedBook)
+
+    }
 }

@@ -54,4 +54,8 @@ class BookServiceImpl(
 
         return bookRepository.save(updatedBook)
     }
+
+    override fun delete(isbn: String) {
+        bookRepository.deleteById(isbn)
+    }
 }

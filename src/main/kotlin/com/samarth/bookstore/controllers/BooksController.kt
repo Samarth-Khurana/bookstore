@@ -9,6 +9,7 @@ import com.samarth.bookstore.toBookSummaryDto
 import com.samarth.bookstore.toBookSummaryUpdate
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -80,5 +81,11 @@ class BooksController(
         } catch (e: IllegalStateException) {
             ResponseEntity(HttpStatus.BAD_REQUEST)
         }
+    }
+
+    @DeleteMapping(path = ["{isbn}"])
+    fun delete(@PathVariable(name = "isbn") isbn: String): ResponseEntity<Unit> {
+        bookService.delete(isbn)
+        return ResponseEntity(HttpStatus.NO_CONTENT)
     }
 }

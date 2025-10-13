@@ -11,4 +11,5 @@ interface BookService {
     fun readManyBooks(authorId: Long? = null): List<BookEntity>
     fun readOneBook(isbn: String): BookEntity?
     fun partialUpdate(isbn: String, bookSummaryUpdate: BookSummaryUpdate): BookEntity
+    fun delete(isbn: String)
 }
