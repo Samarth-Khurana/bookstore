@@ -130,4 +130,43 @@ class BookServiceImplTest @Autowired constructor(
 
         assertEquals(listOf(savedBook_1, savedBook_2), books)
     }
+
+    @Test
+    fun `test that readManyBooks returns only the books by the author when valid author id is provided`() {
+        val savedAuthor = authorRepository.save(testAuthorEntity())
+        val authorId = savedAuthor.id
+        assertNotNull(authorId)
+
+        val book1 = testBookEntity("1234", savedAuthor)
+
+        bookRepository.save(book1)
+
+
+        val author2 = authorRepository.save(testAuthorEntity())
+        bookRepository.save(testBookEntity("123", testAuthorEntity(author2.id)))
+
+        val retrievedBooks = bookRepository.findAll()
+        assertEquals(2, retrievedBooks.size)
+        val books = underTest.readManyBooks(authorId)
+
+        assertEquals(listOf(book1), books)
+    }
+
+    @Test
+    fun `test that empty list is returned when invalid author is is provided`() {
+        val savedAuthor = authorRepository.save(testAuthorEntity())
+        val authorId = savedAuthor.id
+        assertNotNull(authorId)
+
+
+        val book1 = testBookEntity("1234", savedAuthor)
+        bookRepository.save(book1)
+
+
+        val books = underTest.readManyBooks(authorId+1)
+
+
+        assertEquals(emptyList(), books)
+
+    }
 }

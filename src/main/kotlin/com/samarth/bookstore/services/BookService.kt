@@ -7,5 +7,5 @@ import org.springframework.stereotype.Service
 @Service
 interface BookService {
     fun createUpdateBook(isbn: String, bookSummary: BookSummary): Pair<BookEntity, Boolean>
-    fun readManyBooks(): List<BookEntity>
+    fun readManyBooks(authorId: Long? = null): List<BookEntity>
 }

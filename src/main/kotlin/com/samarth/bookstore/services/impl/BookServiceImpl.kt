@@ -28,7 +28,9 @@ class BookServiceImpl(
         return Pair(savedBook, !bookExists)
     }
 
-    override fun readManyBooks(): List<BookEntity> {
-        return bookRepository.findAll()
+    override fun readManyBooks(authorId: Long?): List<BookEntity> {
+        return authorId?.let {
+            bookRepository.findByAuthorId(authorId)
+        } ?: bookRepository.findAll()
     }
 }
