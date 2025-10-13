@@ -8,4 +8,5 @@ import org.springframework.stereotype.Service
 interface BookService {
     fun createUpdateBook(isbn: String, bookSummary: BookSummary): Pair<BookEntity, Boolean>
     fun readManyBooks(authorId: Long? = null): List<BookEntity>
+    fun readOneBook(isbn: String): BookEntity?
 }

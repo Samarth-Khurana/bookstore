@@ -155,4 +155,43 @@ class BooksControllerTest @Autowired constructor(
             content { jsonPath("$[0].author.image", equalTo("image.jpeg")) }
         }
     }
+
+    @Test
+    fun `test that readOneBook returns HTTP 400 when invalid book id`() {
+        every {
+            bookService.readOneBook(any())
+        } answers {
+            null
+        }
+
+        mockMvc.get("/v1/books/123") {
+            contentType = MediaType.APPLICATION_JSON
+            accept = MediaType.APPLICATION_JSON
+        }.andExpect {
+            status { isBadRequest() }
+        }
+    }
+
+    @Test
+    fun `test that readOneBook returns HTTP with valid book when valid isbn`() {
+        every {
+            bookService.readOneBook(any())
+        } answers {
+            testBookEntity("1234", testAuthorEntity(1))
+        }
+
+        mockMvc.get("/v1/books/1234") {
+            contentType = MediaType.APPLICATION_JSON
+            accept = MediaType.APPLICATION_JSON
+        }.andExpect {
+            status { isOk() }
+            content { jsonPath("$.isbn", equalTo("1234")) }
+            content { jsonPath("$.title", equalTo("Test Book")) }
+            content { jsonPath("$.image", equalTo("book-image.jpeg")) }
+            content { jsonPath("$.description", equalTo("Book Desc")) }
+            content { jsonPath("$.author.id", equalTo(1)) }
+            content { jsonPath("$.author.name", equalTo("John Doe")) }
+            content { jsonPath("$.author.image", equalTo("image.jpeg")) }
+        }
+    }
 }

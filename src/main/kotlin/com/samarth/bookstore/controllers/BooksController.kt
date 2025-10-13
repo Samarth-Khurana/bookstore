@@ -53,4 +53,14 @@ class BooksController(
             HttpStatus.OK
         )
     }
+
+    @GetMapping(path = ["/{isbn}"])
+    fun readOneBook(@PathVariable(name = "isbn") isbn: String): ResponseEntity<BookSummaryDto> {
+        val book = bookService.readOneBook(isbn) ?: return ResponseEntity(HttpStatus.BAD_REQUEST)
+
+        return ResponseEntity(
+            book.toBookSummaryDto(),
+            HttpStatus.OK
+        )
+    }
 }

@@ -15,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.repository.findByIdOrNull
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 @SpringBootTest
 @Transactional
@@ -168,5 +169,23 @@ class BookServiceImplTest @Autowired constructor(
 
         assertEquals(emptyList(), books)
 
+    }
+
+    @Test
+    fun `test that readOneBook returns null when invalid isbn`() {
+        val book = underTest.readOneBook("1234")
+        assertNull(book)
+    }
+
+    @Test
+    fun `test that readOneBook returns valid book on valid isbn from db`() {
+        val savedBook = bookRepository.save(testBookEntity("1234", testAuthorEntity()))
+        assertNotNull(savedBook)
+
+
+        val answer = underTest.readOneBook("1234")
+
+
+        assertEquals(savedBook, answer)
     }
 }
