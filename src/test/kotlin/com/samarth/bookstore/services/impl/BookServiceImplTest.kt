@@ -1,5 +1,6 @@
 package com.samarth.bookstore.services.impl
 
+import com.samarth.bookstore.domain.entities.BookEntity
 import com.samarth.bookstore.repositories.AuthorRepository
 import com.samarth.bookstore.repositories.BookRepository
 import com.samarth.bookstore.testAuthorEntity
@@ -101,5 +102,32 @@ class BookServiceImplTest @Autowired constructor(
 
         assertEquals(retrievedBook, updatedBook)
 
+    }
+
+    @Test
+    fun `test that readManyBooks returns empty list when no book in database`() {
+        val books = underTest.readManyBooks()
+        assertEquals(emptyList<BookEntity>(), books)
+    }
+
+    @Test
+    fun `test that readManyBooks returns all the books present in the database`() {
+        val savedAuthor = authorRepository.save(testAuthorEntity())
+        val savedBook_1 = bookRepository.save(
+            testBookEntity(
+                isbn = "1234",
+                authorEntity = savedAuthor
+            )
+        )
+        val savedBook_2 = bookRepository.save(
+            testBookEntity(
+                isbn = "2234",
+                authorEntity = savedAuthor
+            )
+        )
+
+        val books = underTest.readManyBooks()
+
+        assertEquals(listOf(savedBook_1, savedBook_2), books)
     }
 }
